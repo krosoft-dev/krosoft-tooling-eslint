@@ -1,7 +1,7 @@
 {
   "name": "@krosoft/tooling-eslint",
   "version": "0.0.1",
-  "description": "Shared ESLint 9 flat configuration — base TypeScript",
+  "description": "Krosoft ESLint shared config for TypeScript",
   "type": "module",
   "exports": {
     ".": "./base.js"
@@ -16,6 +16,10 @@
     "eslint-plugin-prettier": ">=5.0.0",
     "globals": ">=15.0.0",
     "typescript-eslint": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krosoft-dev/krosoft-tooling-eslint.git"
   },
   "publishConfig": {
     "access": "public"
