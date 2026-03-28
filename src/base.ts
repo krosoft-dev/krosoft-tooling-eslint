@@ -4,16 +4,18 @@ import prettierConfig from "eslint-config-prettier";
 import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import globals from "globals";
 
-/**
- * @param {{ tsconfigRootDir: string, project?: string[] }} options
- * @returns {import("typescript-eslint").ConfigArray}
- */
+interface BaseConfigOptions {
+  tsconfigRootDir: string;
+  project?: string[];
+}
+
 export function createBaseConfig({
   tsconfigRootDir,
   project = ["./tsconfig.json"],
-}) {
+}: BaseConfigOptions): ReturnType<typeof tseslint.config> {
   return tseslint.config(
     { ignores: ["dist"] },
+
     js.configs.recommended,
     tseslint.configs.strictTypeChecked,
     prettierConfig,
