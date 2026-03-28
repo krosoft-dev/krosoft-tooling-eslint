@@ -99,6 +99,7 @@ export function createBaseConfig({
             format: ["camelCase", "UPPER_CASE", "PascalCase"],
             leadingUnderscore: "allow",
           },
+          { selector: "import", format: ["camelCase", "PascalCase"] },
           { selector: "function", format: ["camelCase", "PascalCase"] },
           {
             selector: "parameter",
