@@ -14,7 +14,7 @@ export function createBaseConfig({
   project = ["./tsconfig.json"],
 }: BaseConfigOptions): ReturnType<typeof tseslint.config> {
   return tseslint.config(
-    { ignores: ["dist"] },
+    { ignores: ["dist", "*.config.ts", "*.config.js"] },
 
     js.configs.recommended,
     tseslint.configs.strictTypeChecked,
