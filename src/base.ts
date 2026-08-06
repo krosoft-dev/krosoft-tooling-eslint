@@ -119,6 +119,13 @@ export function createBaseConfig({
             format: ["PascalCase"],
             custom: { regex: "^I[A-Z]", match: false },
           },
+          {
+            // Custom properties CSS (`--radius-control`) : le nom est imposé par
+            // la feuille de style, il n'est pas renommable côté TS.
+            selector: ["objectLiteralProperty", "typeProperty"],
+            filter: { regex: "^--", match: true },
+            format: null,
+          },
         ],
 
         // Code Quality
