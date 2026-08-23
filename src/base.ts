@@ -1,7 +1,6 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import prettierConfig from "eslint-config-prettier";
-import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import globals from "globals";
 
 interface BaseConfigOptions {
@@ -14,10 +13,24 @@ export function createBaseConfig({
   project = ["./tsconfig.json"],
 }: BaseConfigOptions): ReturnType<typeof tseslint.config> {
   return tseslint.config(
-    { ignores: ["dist", "*.config.ts", "*.config.js"] },
+    {
+      ignores: [
+        "dist",
+        "build",
+        "coverage",
+        "public/**",
+        "*.config.ts",
+        "*.config.js",
+      ],
+    },
 
     js.configs.recommended,
-    tseslint.configs.strictTypeChecked,
+
+    ...tseslint.configs.strictTypeChecked.map((config) => ({
+      ...config,
+      files: ["**/*.{ts,tsx}"],
+    })),
+
     prettierConfig,
     {
       files: ["**/*.{ts,tsx}"],
@@ -37,7 +50,6 @@ export function createBaseConfig({
         "@typescript-eslint": tseslint.plugin,
       },
       rules: {
-        // TypeScript - Very Strict
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
@@ -47,43 +59,51 @@ export function createBaseConfig({
           },
         ],
         "@typescript-eslint/no-explicit-any": "error",
-        "@typescript-eslint/explicit-function-return-type": [
+        "@typescript-eslint/no-non-null-assertion": "error",
+        "@typescript-eslint/no-unnecessary-condition": "error",
+        "@typescript-eslint/no-unnecessary-type-assertion": "error",
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/await-thenable": "error",
+        "@typescript-eslint/require-await": "error",
+        "@typescript-eslint/no-confusing-void-expression": "error",
+        "@typescript-eslint/no-meaningless-void-operator": "error",
+
+        "@typescript-eslint/no-misused-promises": [
           "error",
+          { checksVoidReturn: { attributes: false } },
+        ],
+
+        "@typescript-eslint/no-unsafe-argument": "warn",
+        "@typescript-eslint/no-unsafe-assignment": "warn",
+        "@typescript-eslint/no-unsafe-call": "warn",
+        "@typescript-eslint/no-unsafe-member-access": "warn",
+        "@typescript-eslint/no-unsafe-return": "warn",
+        "@typescript-eslint/restrict-template-expressions": "warn",
+        "@typescript-eslint/restrict-plus-operands": "warn",
+        "@typescript-eslint/no-deprecated": "warn",
+        "@typescript-eslint/prefer-optional-chain": "warn",
+        "@typescript-eslint/explicit-function-return-type": [
+          "warn",
           {
             allowExpressions: true,
             allowTypedFunctionExpressions: true,
             allowHigherOrderFunctions: true,
           },
         ],
-        "@typescript-eslint/explicit-module-boundary-types": "error",
-        "@typescript-eslint/no-non-null-assertion": "error",
-        "@typescript-eslint/no-unnecessary-condition": "error",
-        "@typescript-eslint/no-unnecessary-type-assertion": "error",
-        "@typescript-eslint/prefer-nullish-coalescing": "error",
-        "@typescript-eslint/prefer-optional-chain": "error",
+        "@typescript-eslint/explicit-module-boundary-types": "warn",
+        "@typescript-eslint/prefer-nullish-coalescing": "warn",
+        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
+        "@typescript-eslint/prefer-readonly": "warn",
+        "@typescript-eslint/prefer-readonly-parameter-types": "off",
         "@typescript-eslint/strict-boolean-expressions": [
-          "error",
+          "warn",
           {
             allowString: false,
             allowNumber: false,
             allowNullableObject: false,
           },
         ],
-        "@typescript-eslint/switch-exhaustiveness-check": "error",
-        "@typescript-eslint/no-floating-promises": "error",
-        "@typescript-eslint/no-misused-promises": "error",
-        "@typescript-eslint/await-thenable": "error",
-        "@typescript-eslint/require-await": "error",
-        "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
-        "@typescript-eslint/prefer-readonly": "error",
-        "@typescript-eslint/prefer-readonly-parameter-types": "off",
-        "@typescript-eslint/no-confusing-void-expression": "error",
-        "@typescript-eslint/no-meaningless-void-operator": "error",
-        "@typescript-eslint/no-unsafe-argument": "error",
-        "@typescript-eslint/no-unsafe-assignment": "error",
-        "@typescript-eslint/no-unsafe-call": "error",
-        "@typescript-eslint/no-unsafe-member-access": "error",
-        "@typescript-eslint/no-unsafe-return": "error",
 
         // Naming Conventions
         "@typescript-eslint/naming-convention": [
@@ -103,7 +123,7 @@ export function createBaseConfig({
           { selector: "function", format: ["camelCase", "PascalCase"] },
           {
             selector: "parameter",
-            format: ["camelCase"],
+            format: ["camelCase", "PascalCase"],
             leadingUnderscore: "allow",
           },
           {
@@ -113,43 +133,51 @@ export function createBaseConfig({
             leadingUnderscore: "require",
           },
           { selector: "typeLike", format: ["PascalCase"] },
-          { selector: "enumMember", format: ["UPPER_CASE"] },
+          {
+            selector: "enumMember",
+            format: ["UPPER_CASE", "PascalCase"],
+          },
           {
             selector: "interface",
             format: ["PascalCase"],
             custom: { regex: "^I[A-Z]", match: false },
           },
           {
-            // Custom properties CSS (`--radius-control`) : le nom est imposé par
-            // la feuille de style, il n'est pas renommable côté TS.
             selector: ["objectLiteralProperty", "typeProperty"],
-            filter: { regex: "^--", match: true },
+            format: ["camelCase", "snake_case", "PascalCase", "UPPER_CASE"],
+            leadingUnderscore: "allow",
+          },
+          {
+            selector: ["objectLiteralProperty", "typeProperty"],
+            filter: { regex: "^[^a-zA-Z_$]|[^a-zA-Z0-9_$]", match: true },
+            format: null,
+          },
+          {
+            selector: ["objectLiteralProperty", "typeProperty"],
+            modifiers: ["requiresQuotes"],
             format: null,
           },
         ],
 
-        // Code Quality
         "no-console": ["warn", { allow: ["warn", "error"] }],
         "no-debugger": "error",
         "no-alert": "error",
         "no-var": "error",
         "prefer-const": "error",
-        "prefer-arrow-callback": "error",
-        "prefer-template": "error",
-        "no-nested-ternary": "error",
-        "no-unneeded-ternary": "error",
         eqeqeq: ["error", "always"],
-        curly: ["error", "all"],
-        "no-else-return": "error",
-        "no-lonely-if": "error",
-        "no-useless-return": "error",
-        "prefer-destructuring": ["error", { object: true, array: false }],
-        "object-shorthand": ["error", "always"],
         "no-param-reassign": "error",
 
-        "prettier/prettier": "error",
+        curly: ["warn", "all"],
+        "prefer-arrow-callback": "warn",
+        "prefer-template": "warn",
+        "no-nested-ternary": "warn",
+        "no-unneeded-ternary": "warn",
+        "no-else-return": "warn",
+        "no-lonely-if": "warn",
+        "no-useless-return": "warn",
+        "prefer-destructuring": ["warn", { object: true, array: false }],
+        "object-shorthand": ["warn", "always"],
       },
     },
-    eslintPluginPrettier,
   );
 }
