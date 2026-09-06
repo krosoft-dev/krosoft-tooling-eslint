@@ -5,12 +5,10 @@ import globals from "globals";
 
 interface BaseConfigOptions {
   tsconfigRootDir: string;
-  project?: string[];
 }
 
 export function createBaseConfig({
   tsconfigRootDir,
-  project = ["./tsconfig.json"],
 }: BaseConfigOptions): ReturnType<typeof tseslint.config> {
   return tseslint.config(
     {
@@ -39,7 +37,7 @@ export function createBaseConfig({
         sourceType: "module",
         parser: tseslint.parser,
         parserOptions: {
-          project,
+          projectService: true,
           tsconfigRootDir,
         },
         globals: {
