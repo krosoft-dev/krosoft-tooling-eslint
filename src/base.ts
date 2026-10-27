@@ -117,6 +117,13 @@ export function createBaseConfig({
             format: ["camelCase", "UPPER_CASE", "PascalCase"],
             leadingUnderscore: "allow",
           },
+          // Globals injectées au build (`define` de Vite) : `__APP_VERSION__`, `__BUILD_DATE__`…
+          {
+            selector: "variable",
+            modifiers: ["global"],
+            filter: { regex: "^__[A-Z0-9_]+__$", match: true },
+            format: null,
+          },
           { selector: "import", format: ["camelCase", "PascalCase"] },
           { selector: "function", format: ["camelCase", "PascalCase"] },
           {
